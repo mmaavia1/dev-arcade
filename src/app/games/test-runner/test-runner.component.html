@@ -1,48 +1,96 @@
 <div class="game-shell" [class.flash-good]="feedback==='good'" [class.flash-bad]="feedback==='bad'">
+
+  <!-- Top Bar -->
   <div class="top-bar">
-    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <button class="back-btn" (click)="goHome()">🏠 Hub</button>
     <div class="hud">
-      <div class="hud-item"><span class="h-label">SCORE</span><span class="h-val">{{ score }}</span></div>
-      <div class="hud-item"><span class="h-label">LIVES</span><span class="h-val">@for(l of livesArr();track $index){❤️}</span></div>
+      <div class="hud-item">
+        <span class="h-label">SCORE</span>
+        <span class="h-val green">{{ score }}</span>
+      </div>
+      <div class="hud-item">
+        <span class="h-label">LIVES</span>
+        <span class="h-val">
+          @for (l of livesArr(); track $index) { <span class="heart">❤️</span> }
+        </span>
+      </div>
+      <div class="hud-item">
+        <span class="h-label">BEST</span>
+        <span class="h-val gold">{{ bestScore }}</span>
+      </div>
     </div>
-    <div class="best">BEST: {{ bestScore }}</div>
+    <div class="hint">Mouse or ← → to move</div>
   </div>
 
+  <!-- Arena -->
   <div class="arena" #arena>
+
+    <!-- Idle -->
     @if (state === 'ready') {
       <div class="overlay-screen">
-        <div class="os-emoji">🧪</div>
-        <h2>Test Runner</h2>
-        <p>Catch <span class="green">✅ passing tests</span>, dodge <span class="red">❌ failing ones!</span><br><small>Move mouse or ← → keys</small></p>
-        <button class="big-btn blue" (click)="startGame()">▶ START</button>
+        <div class="terminal-header">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="term-title">test-runner v2.0</span>
+        </div>
+        <div class="terminal-body">
+          <p class="term-line"><span class="prompt">$</span> npm test</p>
+          <p class="term-line dim">Running test suite...</p>
+          <p class="term-line pass">✅ Catch passing tests for points</p>
+          <p class="term-line fail">❌ Dodge failing tests or lose a life</p>
+          <p class="term-line warn">⚠️  Warning tests cost points if caught</p>
+          <p class="term-line blink">▋</p>
+        </div>
+        <button class="big-btn blue" (click)="startGame()">▶ Run Tests</button>
       </div>
     }
+
+    <!-- Dead -->
     @if (state === 'dead') {
       <div class="overlay-screen">
-        <div class="os-emoji">🔴</div>
-        <h2>All Tests Failed!</h2>
-        <div class="final-scores">
-          <div class="fs-row"><span>Score</span><strong>{{ score }}</strong></div>
-          <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}</strong></div>
+        <div class="terminal-header">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="term-title">test-runner — FAILED</span>
+        </div>
+        <div class="terminal-body">
+          <p class="term-line fail">✖ Test suite failed</p>
+          <p class="term-line dim">Tests passed:&nbsp;&nbsp;<strong class="white">{{ score / 10 }}</strong></p>
+          <p class="term-line dim">Final score:&nbsp;&nbsp;<strong class="white">{{ score }}</strong></p>
+          <p class="term-line gold-text">Best score:&nbsp;&nbsp;&nbsp;<strong>{{ bestScore }}</strong></p>
         </div>
         <div class="over-btns">
-          <button class="big-btn blue" (click)="playAgain()">↺ Try Again</button>
-          <button class="big-btn ghost" (click)="goHome()">⌂ Hub</button>
+          <button class="big-btn blue" (click)="playAgain()">↺ Retry</button>
+          <button class="big-btn ghost" (click)="goHome()">🏠 Hub</button>
         </div>
       </div>
     }
 
+    <!-- Falling test items -->
     @for (item of items; track item.id) {
-      <div class="test-item" [class.pass]="item.type==='pass'" [class.fail]="item.type==='fail'"
-        [style.left.%]="item.x" [style.top.%]="item.y">
+      <div class="test-item"
+        [class.pass]="item.type==='pass'"
+        [class.fail]="item.type==='fail'"
+        [style.left.%]="item.x"
+        [style.top.%]="item.y">
+        <span class="item-dot"></span>
         {{ item.label }}
       </div>
     }
 
+    <!-- Catcher -->
     @if (state === 'playing') {
       <div class="catcher" [style.left.%]="catcherX">
-        <div class="catcher-label">🧺 CATCH</div>
+        <div class="catcher-inner">
+          <span class="catcher-icon">🧺</span>
+          <span class="catcher-label">CATCH</span>
+        </div>
+        <div class="catcher-beam"></div>
       </div>
+    }
+
+    <!-- Lane guides (subtle) -->
+    @if (state === 'playing') {
+      <div class="lane-guide left"  [style.left.%]="catcherX - 12"></div>
+      <div class="lane-guide right" [style.left.%]="catcherX + 12"></div>
     }
   </div>
 </div>

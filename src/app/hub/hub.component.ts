@@ -24,6 +24,7 @@ export class HubComponent implements OnInit {
     {
       id: 'dev', label: 'Developers', emoji: '👨‍💻', color: '#4CAF50',
       games: [
+        { id:'bug-tower-defense', route:'/bug-tower-defense', title:'Bug Tower Defense', emoji:'🏰', desc:'Build towers to stop bugs reaching production! 10 waves of chaos.', tag:'Dev', tagColor:'#4CAF50', bg:'linear-gradient(135deg,#0f2a0f,#1a3a0a)', difficulty:'Hard' },
         { id:'bug-squash',  route:'/bug-squash',  title:'Bug Squash',   emoji:'🐛', desc:'Squash bugs before they escape to production!',  tag:'Dev',  tagColor:'#4CAF50', bg:'linear-gradient(135deg,#1a3a1a,#0d1f0d)', difficulty:'Medium' },
         { id:'deploy-dash', route:'/deploy-dash', title:'Deploy Dash',  emoji:'🚀', desc:'Jump over merge conflicts to reach deploy!',       tag:'Dev',  tagColor:'#4CAF50', bg:'linear-gradient(135deg,#1a1a3a,#0d0d25)', difficulty:'Hard'   },
       ]

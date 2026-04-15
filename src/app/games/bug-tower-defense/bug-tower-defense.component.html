@@ -1,0 +1,200 @@
+<div class="btd-wrapper">
+
+  <!-- ── HUD ─────────────────────────────────────────────────────────────── -->
+  <header class="hud">
+    <button class="hud-btn home-btn" (click)="goHome()">🏠 Hub</button>
+
+    <div class="hud-stats">
+      <div class="stat">
+        <span class="stat-icon">🌊</span>
+        <span class="stat-val">{{ wave }}/{{ waveCount }}</span>
+        <span class="stat-label">Wave</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">💰</span>
+        <span class="stat-val">{{ credits }}</span>
+        <span class="stat-label">Credits</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">❤️</span>
+        <span class="stat-val lives-val" [class.danger]="lives <= 5">{{ lives }}</span>
+        <span class="stat-label">Lives</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-val">{{ score }}</span>
+        <span class="stat-label">Score</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">🏆</span>
+        <span class="stat-val">{{ bestScore }}</span>
+        <span class="stat-label">Best</span>
+      </div>
+    </div>
+
+    <button
+      class="hud-btn wave-btn"
+      [class.disabled]="phase !== 'prep'"
+      (click)="startWave()"
+      [disabled]="phase !== 'prep'">
+      {{ phase === 'prep' ? '▶ Start Wave ' + (wave + 1) : phase === 'wave' ? '⚔️ Wave ' + wave + ' Active' : '⏳ Done' }}
+    </button>
+  </header>
+
+  <!-- ── Main Area ─────────────────────────────────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas
+        #canvas
+        (click)="onCanvasClick($event)"
+        (mousemove)="onCanvasMove($event)"
+        (mouseleave)="onCanvasLeave()">
+      </canvas>
+
+      <!-- Prep overlay (first time) -->
+      @if (phase === 'prep' && wave === 0 && showTutorial) {
+        <div class="overlay tutorial-overlay">
+          <div class="overlay-card">
+            <h2>🐛 Bug Tower Defense</h2>
+            <p class="sub">Defend your codebase! Place towers to stop bugs reaching production.</p>
+            <div class="tips">
+              <div class="tip"><span>🔫</span><span>Basic — fast, single target</span></div>
+              <div class="tip"><span>💣</span><span>Cannon — AOE blast, hits groups</span></div>
+              <div class="tip"><span>❄️</span><span>Freeze — slows bugs by 60%</span></div>
+              <div class="tip"><span>⚡</span><span>Zapper — massive single damage</span></div>
+            </div>
+            <p class="tip-note">Click a tower in the shop → click a green cell to place it.<br>Click a placed tower to upgrade or sell.</p>
+            <button class="btn-primary" (click)="showTutorial = false; startWave()">
+              ▶ Start Game
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Between-wave overlay -->
+      @if (phase === 'prep' && wave > 0) {
+        <div class="wave-complete-banner">
+          <span>✅ Wave {{ wave }} Complete! +{{ 50 + wave * 20 }}💰 — Place more towers</span>
+        </div>
+      }
+
+      <!-- Game Over overlay -->
+      @if (phase === 'gameover') {
+        <div class="overlay gameover-overlay">
+          <div class="overlay-card">
+            <h2>💀 GAME OVER</h2>
+            <p class="sub">Bugs reached production on wave {{ wave }}!</p>
+            <div class="result-scores">
+              <div class="result-row"><span>Score</span><strong>{{ score }}</strong></div>
+              <div class="result-row"><span>Best</span><strong>{{ bestScore }}</strong></div>
+              <div class="result-row"><span>Waves</span><strong>{{ wave }}/{{ waveCount }}</strong></div>
+            </div>
+            <div class="overlay-actions">
+              <button class="btn-primary" (click)="restart()">🔄 Try Again</button>
+              <button class="btn-secondary" (click)="goHome()">🏠 Hub</button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Victory overlay -->
+      @if (phase === 'victory') {
+        <div class="overlay victory-overlay">
+          <div class="overlay-card">
+            <h2>🏆 VICTORY!</h2>
+            <p class="sub">You defended all 10 waves! Codebase is bug-free! 🎉</p>
+            <div class="result-scores">
+              <div class="result-row"><span>Final Score</span><strong>{{ score }}</strong></div>
+              <div class="result-row"><span>Best Score</span><strong>{{ bestScore }}</strong></div>
+              <div class="result-row"><span>Lives Left</span><strong>{{ lives }}/20</strong></div>
+            </div>
+            <div class="overlay-actions">
+              <button class="btn-primary" (click)="restart()">🔄 Play Again</button>
+              <button class="btn-secondary" (click)="goHome()">🏠 Hub</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Side Panel ──────────────────────────────────────────────────────── -->
+    <aside class="side-panel">
+
+      <!-- Tower Shop -->
+      <section class="shop">
+        <h3 class="panel-title">🏪 Tower Shop</h3>
+        @for (type of towerTypes; track type) {
+          <button
+            class="tower-card"
+            [class.selected]="selectedTower === type"
+            [class.cannot-afford]="!canAfford(type)"
+            (click)="selectTower(type)">
+            <span class="tower-emoji">{{ towerEmoji(type) }}</span>
+            <div class="tower-info">
+              <span class="tower-name">{{ towerName(type) }}</span>
+              <span class="tower-desc">{{ towerDesc(type) }}</span>
+            </div>
+            <span class="tower-cost" [class.cant]="!canAfford(type)">💰{{ towerCost(type) }}</span>
+          </button>
+        }
+      </section>
+
+      <!-- Inspect Panel -->
+      @if (inspected) {
+        <section class="inspect">
+          <h3 class="panel-title">🔍 Tower Info</h3>
+          <div class="inspect-header">
+            <span class="inspect-emoji">{{ inspected.emoji }}</span>
+            <div>
+              <div class="inspect-name">{{ towerName(inspected.type) }}</div>
+              <div class="inspect-level">
+                @for (l of [1,2,3]; track l) {
+                  <span class="star" [class.active]="l <= inspected.level">★</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="inspect-stats">
+            <div class="i-stat"><span>DMG</span><strong>{{ inspected.damage }}</strong></div>
+            <div class="i-stat"><span>RNG</span><strong>{{ inspected.range }}</strong></div>
+            <div class="i-stat"><span>RATE</span><strong>{{ inspected.fireRate }}/s</strong></div>
+            <div class="i-stat"><span>LVL</span><strong>{{ inspected.level }}/3</strong></div>
+          </div>
+          <div class="inspect-actions">
+            @if (inspected.level < 3) {
+              <button
+                class="btn-upgrade"
+                [class.cant]="credits < upgradeCost()"
+                [disabled]="credits < upgradeCost()"
+                (click)="upgradeTower()">
+                ⬆️ Upgrade (💰{{ upgradeCost() }})
+              </button>
+            } @else {
+              <div class="max-level">MAX LEVEL</div>
+            }
+            <button class="btn-sell" (click)="sellTower()">
+              💵 Sell (💰{{ sellValue() }})
+            </button>
+          </div>
+        </section>
+      }
+
+      <!-- Wave info -->
+      <section class="wave-info">
+        <h3 class="panel-title">📋 Progress</h3>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" [style.width.%]="(wave / waveCount) * 100"></div>
+        </div>
+        <div class="wave-dots">
+          @for (w of [].constructor(waveCount); track $index) {
+            <div class="wave-dot" [class.done]="$index < wave" [class.current]="$index === wave && phase === 'wave'"></div>
+          }
+        </div>
+        <div class="wave-label">Wave {{ wave }} / {{ waveCount }}</div>
+      </section>
+
+    </aside>
+  </div>
+</div>

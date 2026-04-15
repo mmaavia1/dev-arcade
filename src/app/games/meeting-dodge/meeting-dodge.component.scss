@@ -1,24 +1,29 @@
-.game-shell { display:flex; flex-direction:column; width:100vw; height:100vh; background:linear-gradient(160deg,#1a0800,#0a0a0f); }
-.top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:rgba(0,0,0,0.4); border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
-.back-btn { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:7px 14px; color:#fff; font-size:12px; font-weight:600; cursor:pointer; &:hover{background:rgba(255,255,255,0.16);} }
-.hud { display:flex; gap:24px; } .hud-item { display:flex; flex-direction:column; align-items:center; gap:2px; } .h-label { font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:1.5px; } .h-val { font-size:18px; font-weight:900; color:#fff; }
-.best { font-size:12px; font-weight:700; color:#FFD700; }
-.arena { flex:1; position:relative; overflow:hidden; }
-.player { position:absolute; font-size:32px; transform:translate(-50%,-50%); z-index:10; pointer-events:none; filter:drop-shadow(0 0 8px rgba(255,200,0,0.6)); }
-.meeting { position:absolute; transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none; font-size:14px; background:rgba(255,80,80,0.15); border:1px solid rgba(255,80,80,0.35); border-radius:8px; padding:4px 8px; color:#fff; animation:meetingFloat 3s ease-in-out infinite alternate;
-  &.deadly { background:rgba(150,0,0,0.3); border-color:rgba(255,0,0,0.6); color:#ff6b6b; font-weight:800; animation:deadlyPulse 0.5s ease-in-out infinite alternate; }
+:host { display: block; width: 100%; height: 100vh; overflow: hidden; }
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  cursor: none;
+  user-select: none;
+  background: #140a00;
 }
-.task-collect { position:absolute; font-size:24px; transform:translate(-50%,-50%); pointer-events:none; animation:taskBounce 1s ease-in-out infinite alternate; filter:drop-shadow(0 0 6px rgba(255,215,0,0.5)); }
-.survive-label { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-size:11px; color:rgba(255,255,255,0.25); font-weight:600; pointer-events:none; white-space:nowrap; }
-.overlay-screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); }
-.os-emoji { font-size:72px; } h2 { font-size:clamp(20px,4vw,26px); font-weight:900; color:#fff; text-align:center; } p { font-size:14px; color:rgba(255,255,255,0.6); text-align:center; line-height:1.9; strong{color:#FFB74D;} small{font-size:12px;opacity:.7;} }
-.final-scores { display:flex; flex-direction:column; gap:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px 32px; width:240px; }
-.fs-row { display:flex; justify-content:space-between; font-size:14px; color:rgba(255,255,255,0.6); strong{font-size:20px;color:#fff;} .gold{color:#FFD700;} }
-.over-btns { display:flex; gap:12px; }
-.big-btn { border:none; border-radius:12px; padding:13px 28px; font-size:13px; font-weight:700; cursor:pointer; transition:transform .1s; &:hover{transform:translateY(-2px);} &:active{transform:scale(.96);}
-  &.orange { background:linear-gradient(135deg,#FF9800,#E65100); color:#fff; box-shadow:0 4px 0 #BF360C; }
-  &.ghost  { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+
+canvas { display: block; width: 100%; height: 100%; }
+
+.home-btn {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 7px 12px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,152,0,0.3);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.15s;
+  &:hover { background: rgba(255,152,0,0.15); }
 }
-@keyframes meetingFloat { from{transform:translate(-50%,-50%) rotate(-2deg);} to{transform:translate(-50%,-50%) rotate(2deg);} }
-@keyframes deadlyPulse  { from{box-shadow:0 0 8px rgba(255,0,0,0.3);} to{box-shadow:0 0 20px rgba(255,0,0,0.7);} }
-@keyframes taskBounce   { from{transform:translate(-50%,-50%) scale(1);} to{transform:translate(-50%,-60%) scale(1.1);} }
