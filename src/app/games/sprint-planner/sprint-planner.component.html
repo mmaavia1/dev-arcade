@@ -1,0 +1,69 @@
+<div class="game-shell">
+  <div class="top-bar">
+    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <div class="hud">
+      <div class="hud-item"><span class="h-label">SCORE</span><span class="h-val">{{ score }}</span></div>
+      <div class="hud-item"><span class="h-label">STREAK</span><span class="h-val fire">{{ streak }}🔥</span></div>
+    </div>
+    <div class="best">BEST: {{ bestScore }}</div>
+  </div>
+
+  @if (state === 'ready') {
+    <div class="overlay-screen">
+      <div class="os-emoji">📋</div>
+      <h2>Sprint Planner</h2>
+      <p>Assign each task to the <strong>right team!</strong><br><small>3 correct in a row = bonus points 🔥</small></p>
+      <button class="big-btn orange" (click)="startGame()">▶ START</button>
+    </div>
+  }
+
+  @if (state === 'dead') {
+    <div class="overlay-screen">
+      <div class="os-emoji">🏁</div>
+      <h2>Sprint Complete!</h2>
+      <div class="final-scores">
+        <div class="fs-row"><span>Score</span><strong>{{ score }}</strong></div>
+        <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}</strong></div>
+      </div>
+      <div class="over-btns">
+        <button class="big-btn orange" (click)="playAgain()">↺ Try Again</button>
+        <button class="big-btn ghost"  (click)="goHome()">⌂ Hub</button>
+      </div>
+    </div>
+  }
+
+  @if (state === 'playing') {
+    <div class="play-area">
+      <!-- Timer -->
+      <div class="timer-bar-wrap">
+        <div class="timer-bar" [style.width.%]="timerPct()" [style.background]="timerColor()"></div>
+        <span class="timer-label">{{ timeLeft }}s</span>
+      </div>
+
+      <!-- Task card -->
+      <div class="task-card">
+        <div class="task-emoji">{{ currentTask?.emoji }}</div>
+        <div class="task-title">{{ currentTask?.title }}</div>
+        <div class="task-pts">{{ currentTask?.points }} pts</div>
+      </div>
+
+      <!-- Feedback -->
+      @if (feedback) {
+        <div class="feedback" [class.good]="feedback.good" [class.bad]="!feedback.good">
+          {{ feedback.msg }}
+        </div>
+      }
+
+      <!-- Role buttons -->
+      <p class="assign-label">Assign to →</p>
+      <div class="role-grid">
+        @for (role of roles; track role) {
+          <button class="role-btn" [style.border-color]="roleColors[role]" [style.color]="roleColors[role]" (click)="assign(role)">
+            <span class="role-emoji">{{ roleEmojis[role] }}</span>
+            <span class="role-name">{{ role }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

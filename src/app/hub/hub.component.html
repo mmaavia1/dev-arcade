@@ -1,0 +1,81 @@
+<div class="hub-wrapper">
+
+  <!-- Header -->
+  <header class="hub-header">
+    <div class="logo">
+      <div class="logo-icon-wrap">🕹️</div>
+      <div class="logo-text">
+        <h1>Dev Arcade</h1>
+        <p>{{ totalGames() }} mini games for the whole tech team</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-val">{{ totalGames() }}</span>
+        <span class="stat-label">Games</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-val">5</span>
+        <span class="stat-label">Roles</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Categories -->
+  <div class="hub-body">
+    @for (cat of categories; track cat.id) {
+      <section class="category-section">
+
+        <div class="cat-heading">
+          <div class="cat-label-row">
+            <span class="cat-emoji">{{ cat.emoji }}</span>
+            <h2 class="cat-title" [style.color]="cat.color">{{ cat.label }}</h2>
+            <span class="cat-count">{{ cat.games.length }} game{{ cat.games.length > 1 ? 's' : '' }}</span>
+          </div>
+          <div class="cat-line" [style.background]="cat.color + '40'"></div>
+        </div>
+
+        <div class="games-row">
+          @for (game of cat.games; track game.id) {
+            <div class="game-tile" [style.background]="game.bg" (click)="play(game.route)">
+              <div class="tile-top">
+                <span class="tile-emoji">{{ game.emoji }}</span>
+                <span class="difficulty-badge"
+                  [style.color]="difficultyColor(game.difficulty)"
+                  [style.border-color]="difficultyColor(game.difficulty) + '66'">
+                  {{ game.difficulty }}
+                </span>
+              </div>
+              <div class="tile-info">
+                <h3 class="tile-title">{{ game.title }}</h3>
+                <p class="tile-desc">{{ game.desc }}</p>
+              </div>
+              <div class="tile-footer">
+                @if (scores[game.id] > 0) {
+                  <div class="best-score">
+                    <span class="bs-label">BEST</span>
+                    <span class="bs-val">{{ scores[game.id] }}</span>
+                  </div>
+                } @else {
+                  <span class="new-badge">NEW ✨</span>
+                }
+                <button class="play-btn"
+                  [style.color]="cat.color"
+                  [style.border-color]="cat.color + '55'">
+                  PLAY ▶
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+      </section>
+    }
+  </div>
+
+  <footer class="hub-footer">
+    <p>🕹️ Dev Arcade · Built with Angular</p>
+  </footer>
+
+</div>

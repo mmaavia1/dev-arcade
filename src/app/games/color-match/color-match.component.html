@@ -1,0 +1,71 @@
+<div class="game-shell">
+  <div class="top-bar">
+    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <div class="hud">
+      <div class="hud-item"><span class="h-label">SCORE</span><span class="h-val">{{ score }}</span></div>
+      <div class="hud-item"><span class="h-label">STREAK</span><span class="h-val pink">{{ streak }}🔥</span></div>
+    </div>
+    <div class="best">BEST: {{ bestScore }}</div>
+  </div>
+
+  @if (state === 'ready') {
+    <div class="overlay-screen">
+      <div class="os-emoji">🎨</div>
+      <h2>Color Match</h2>
+      <p>Match the <strong>hex code</strong> to the right color<br>or pick the correct <strong>color name!</strong></p>
+      <button class="big-btn pink-btn" (click)="startGame()">▶ START</button>
+    </div>
+  }
+
+  @if (state === 'dead') {
+    <div class="overlay-screen">
+      <div class="os-emoji">🖼️</div>
+      <h2>Time's Up!</h2>
+      <div class="final-scores">
+        <div class="fs-row"><span>Score</span><strong>{{ score }}</strong></div>
+        <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}</strong></div>
+      </div>
+      <div class="over-btns">
+        <button class="big-btn pink-btn" (click)="playAgain()">↺ Try Again</button>
+        <button class="big-btn ghost"    (click)="goHome()">⌂ Hub</button>
+      </div>
+    </div>
+  }
+
+  @if (state === 'playing') {
+    <div class="play-area" [class.flash-good]="feedback==='good'" [class.flash-bad]="feedback==='bad'">
+      <div class="timer-wrap">
+        <div class="timer-bar" [style.width.%]="timerPct()" [style.background]="timerColor()"></div>
+        <span class="timer-label">{{ timeLeft }}s</span>
+      </div>
+
+      <!-- Mode: hex → pick color swatch -->
+      @if (mode === 'hex-to-color') {
+        <div class="question-card">
+          <p class="q-label">Which color is this hex?</p>
+          <div class="hex-display" [style.background]="targetColor.hex">
+            <span class="hex-code">{{ targetColor.hex }}</span>
+          </div>
+        </div>
+        <div class="options-grid">
+          @for (opt of options; track opt.hex) {
+            <button class="swatch-btn" [style.background]="opt.hex" (click)="pick(opt)"></button>
+          }
+        </div>
+      }
+
+      <!-- Mode: color swatch → pick name -->
+      @if (mode === 'color-to-name') {
+        <div class="question-card">
+          <p class="q-label">What's the name of this color?</p>
+          <div class="big-swatch" [style.background]="targetColor.hex"></div>
+        </div>
+        <div class="name-options">
+          @for (opt of options; track opt.hex) {
+            <button class="name-btn" (click)="pick(opt)">{{ opt.name }}</button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

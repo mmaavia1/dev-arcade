@@ -1,0 +1,51 @@
+<div class="game-shell" (click)="onTap()">
+  <div class="top-bar" (click)="$event.stopPropagation()">
+    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <div class="hud">
+      <div class="hud-item"><span class="h-label">DISTANCE</span><span class="h-val">{{ score }}m</span></div>
+      <div class="hud-item"><span class="h-label">BEST</span><span class="h-val gold">{{ bestScore }}m</span></div>
+    </div>
+    <div class="hint">SPACE / TAP to jump</div>
+  </div>
+
+  <div class="arena">
+    @if (state === 'ready') {
+      <div class="overlay-screen" (click)="$event.stopPropagation()">
+        <div class="os-emoji">🚀</div>
+        <h2>Deploy Dash</h2>
+        <p>Jump over obstacles to reach <strong>production!</strong><br><small>SPACE or TAP to jump</small></p>
+        <button class="big-btn purple" (click)="startGame()">▶ START</button>
+      </div>
+    }
+    @if (state === 'dead') {
+      <div class="overlay-screen" (click)="$event.stopPropagation()">
+        <div class="os-emoji">💥</div>
+        <h2>Deploy Failed!</h2>
+        <div class="final-scores">
+          <div class="fs-row"><span>Distance</span><strong>{{ score }}m</strong></div>
+          <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}m</strong></div>
+        </div>
+        <div class="over-btns">
+          <button class="big-btn purple" (click)="playAgain()">↺ Try Again</button>
+          <button class="big-btn ghost" (click)="goHome()">⌂ Hub</button>
+        </div>
+      </div>
+    }
+
+    <!-- Player -->
+    @if (state === 'playing') {
+      <div class="player" [style.bottom.%]="playerBottom()" [style.left.%]="18">👨‍💻</div>
+    }
+
+    <!-- Obstacles -->
+    @for (o of obstacles; track o.id) {
+      <div class="obstacle" [class]="o.type" [style.left.%]="o.x" [style.height.%]="o.h">
+        <span class="obs-label">{{ o.label }}</span>
+      </div>
+    }
+
+    <!-- Ground -->
+    <div class="ground" [style.background-position-x.px]="groundOffset"></div>
+    <div class="deploy-target">🖥️ PROD</div>
+  </div>
+</div>

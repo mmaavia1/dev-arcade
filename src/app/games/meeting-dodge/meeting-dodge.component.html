@@ -1,0 +1,58 @@
+<div class="game-shell">
+  <div class="top-bar">
+    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <div class="hud">
+      <div class="hud-item"><span class="h-label">SURVIVED</span><span class="h-val">{{ survived }}s</span></div>
+      <div class="hud-item"><span class="h-label">SCORE</span><span class="h-val">{{ score }}</span></div>
+    </div>
+    <div class="best">BEST: {{ bestScore }}</div>
+  </div>
+
+  <div class="arena" #arena>
+    @if (state === 'ready') {
+      <div class="overlay-screen">
+        <div class="os-emoji">📅</div>
+        <h2>Meeting Dodge</h2>
+        <p>Dodge pointless meetings to stay <strong>productive!</strong><br>
+           Collect 💼 tasks for bonus points.<br>
+           <small>Move mouse or WASD / Arrow keys</small></p>
+        <button class="big-btn orange" (click)="startGame()">▶ START</button>
+      </div>
+    }
+
+    @if (state === 'dead') {
+      <div class="overlay-screen">
+        <div class="os-emoji">😩</div>
+        <h2>Trapped in Meetings!</h2>
+        <div class="final-scores">
+          <div class="fs-row"><span>Survived</span><strong>{{ survived }}s</strong></div>
+          <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}</strong></div>
+        </div>
+        <div class="over-btns">
+          <button class="big-btn orange" (click)="playAgain()">↺ Try Again</button>
+          <button class="big-btn ghost"  (click)="goHome()">⌂ Hub</button>
+        </div>
+      </div>
+    }
+
+    @if (state === 'playing') {
+      <!-- Player -->
+      <div class="player" [style.left.%]="playerX" [style.top.%]="playerY">👨‍💻</div>
+
+      <!-- Meetings -->
+      @for (m of meetings; track m.id) {
+        <div class="meeting" [class.deadly]="m.deadly"
+          [style.left.%]="m.x" [style.top.%]="m.y" [style.font-size.px]="m.size">
+          {{ m.label }}
+        </div>
+      }
+
+      <!-- Collectible tasks -->
+      @for (t of tasks; track t.id) {
+        <div class="task-collect" [style.left.%]="t.x" [style.top.%]="t.y">💼</div>
+      }
+
+      <div class="survive-label">Stay focused! Dodge the meetings!</div>
+    }
+  </div>
+</div>

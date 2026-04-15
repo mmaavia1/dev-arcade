@@ -1,0 +1,48 @@
+<div class="game-shell" [class.flash-good]="feedback==='good'" [class.flash-bad]="feedback==='bad'">
+  <div class="top-bar">
+    <button class="back-btn" (click)="goHome()">← Hub</button>
+    <div class="hud">
+      <div class="hud-item"><span class="h-label">SCORE</span><span class="h-val">{{ score }}</span></div>
+      <div class="hud-item"><span class="h-label">LIVES</span><span class="h-val">@for(l of livesArr();track $index){❤️}</span></div>
+    </div>
+    <div class="best">BEST: {{ bestScore }}</div>
+  </div>
+
+  <div class="arena" #arena>
+    @if (state === 'ready') {
+      <div class="overlay-screen">
+        <div class="os-emoji">🧪</div>
+        <h2>Test Runner</h2>
+        <p>Catch <span class="green">✅ passing tests</span>, dodge <span class="red">❌ failing ones!</span><br><small>Move mouse or ← → keys</small></p>
+        <button class="big-btn blue" (click)="startGame()">▶ START</button>
+      </div>
+    }
+    @if (state === 'dead') {
+      <div class="overlay-screen">
+        <div class="os-emoji">🔴</div>
+        <h2>All Tests Failed!</h2>
+        <div class="final-scores">
+          <div class="fs-row"><span>Score</span><strong>{{ score }}</strong></div>
+          <div class="fs-row"><span>Best</span><strong class="gold">{{ bestScore }}</strong></div>
+        </div>
+        <div class="over-btns">
+          <button class="big-btn blue" (click)="playAgain()">↺ Try Again</button>
+          <button class="big-btn ghost" (click)="goHome()">⌂ Hub</button>
+        </div>
+      </div>
+    }
+
+    @for (item of items; track item.id) {
+      <div class="test-item" [class.pass]="item.type==='pass'" [class.fail]="item.type==='fail'"
+        [style.left.%]="item.x" [style.top.%]="item.y">
+        {{ item.label }}
+      </div>
+    }
+
+    @if (state === 'playing') {
+      <div class="catcher" [style.left.%]="catcherX">
+        <div class="catcher-label">🧺 CATCH</div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,33 @@
+.game-shell { display:flex; flex-direction:column; width:100vw; height:100vh; background:linear-gradient(160deg,#1a1000,#0a0a0f); }
+.top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 20px; background:rgba(0,0,0,0.4); border-bottom:1px solid rgba(255,255,255,0.07); flex-shrink:0; }
+.back-btn { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:7px 14px; color:#fff; font-size:12px; font-weight:600; cursor:pointer; &:hover{background:rgba(255,255,255,0.16);} }
+.hud { display:flex; gap:24px; } .hud-item { display:flex; flex-direction:column; align-items:center; gap:2px; } .h-label { font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:1.5px; } .h-val { font-size:18px; font-weight:900; color:#fff; &.fire{color:#FF9800;} }
+.best { font-size:12px; font-weight:700; color:#FFD700; }
+.play-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:20px; }
+.timer-bar-wrap { width:100%; max-width:500px; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; position:relative; overflow:hidden; }
+.timer-bar { height:100%; border-radius:4px; transition:width .9s linear, background .3s; }
+.timer-label { position:absolute; right:0; top:-18px; font-size:11px; font-weight:700; color:#fff; }
+.task-card { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:28px 40px; display:flex; flex-direction:column; align-items:center; gap:12px; min-width:280px; max-width:420px; width:100%; animation:cardIn .2s ease; }
+.task-emoji { font-size:52px; }
+.task-title { font-size:clamp(16px,3vw,22px); font-weight:800; color:#fff; text-align:center; }
+.task-pts { font-size:13px; font-weight:700; color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.08); padding:4px 14px; border-radius:50px; }
+.feedback { font-size:16px; font-weight:800; padding:10px 24px; border-radius:12px; animation:popIn .2s ease; &.good { background:rgba(76,175,80,0.25); color:#81C784; border:1px solid rgba(76,175,80,0.4); } &.bad { background:rgba(244,67,54,0.25); color:#E57373; border:1px solid rgba(244,67,54,0.4); } }
+.assign-label { font-size:12px; color:rgba(255,255,255,0.4); font-weight:600; letter-spacing:1px; }
+.role-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:420px; }
+.role-btn { display:flex; flex-direction:column; align-items:center; gap:6px; background:rgba(255,255,255,0.05); border:2px solid; border-radius:16px; padding:16px 12px; font-weight:700; cursor:pointer; transition:transform .1s, background .15s;
+  &:hover { background:rgba(255,255,255,0.1); transform:translateY(-2px); }
+  &:active { transform:scale(.96); }
+}
+.role-emoji { font-size:28px; }
+.role-name { font-size:13px; }
+.overlay-screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); }
+.os-emoji { font-size:72px; } h2 { font-size:clamp(20px,4vw,26px); font-weight:900; color:#fff; text-align:center; } p { font-size:14px; color:rgba(255,255,255,0.6); text-align:center; line-height:1.8; strong{color:#FFB74D;} small{font-size:12px;opacity:.7;} }
+.final-scores { display:flex; flex-direction:column; gap:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px 32px; width:240px; }
+.fs-row { display:flex; justify-content:space-between; font-size:14px; color:rgba(255,255,255,0.6); strong{font-size:20px;color:#fff;} .gold{color:#FFD700;} }
+.over-btns { display:flex; gap:12px; }
+.big-btn { border:none; border-radius:12px; padding:13px 28px; font-size:13px; font-weight:700; cursor:pointer; transition:transform .1s; &:hover{transform:translateY(-2px);} &:active{transform:scale(.96);}
+  &.orange { background:linear-gradient(135deg,#FF9800,#E65100); color:#fff; box-shadow:0 4px 0 #BF360C; }
+  &.ghost  { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+}
+@keyframes cardIn { from{opacity:0;transform:translateY(10px) scale(.97);} to{opacity:1;transform:none;} }
+@keyframes popIn  { from{transform:scale(.8);opacity:0;} to{transform:scale(1);opacity:1;} }

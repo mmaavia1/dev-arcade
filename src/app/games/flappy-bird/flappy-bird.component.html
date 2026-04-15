@@ -1,0 +1,68 @@
+<div class="game-wrapper" (click)="onTap()" (touchstart)="onTap()">
+  <canvas #gameCanvas class="game-canvas"></canvas>
+
+  <!-- Game Over Overlay -->
+  @if (showGameOver) {
+    <div class="overlay game-over-overlay" (click)="$event.stopPropagation()">
+      <div class="game-over-panel">
+
+        @if (isNewHighScore) {
+          <div class="new-record-badge">
+            <span>🏆 NEW RECORD!</span>
+          </div>
+        }
+
+        <h2 class="game-over-title">GAME<br>OVER</h2>
+
+        <div class="scores-display">
+          <div class="score-row">
+            <span class="s-label">SCORE</span>
+            <span class="s-val">{{ score }}</span>
+          </div>
+          <div class="score-divider"></div>
+          <div class="score-row">
+            <span class="s-label">BEST</span>
+            <span class="s-val gold">{{ bestScore }}</span>
+          </div>
+        </div>
+
+        <!-- Name entry for high score -->
+        @if (isNewHighScore) {
+          <div class="name-entry">
+            @if (!nameSaved) {
+              <p class="name-label">Enter your name:</p>
+              <div class="name-row">
+                <input
+                  class="name-input"
+                  type="text"
+                  maxlength="12"
+                  placeholder="Your name"
+                  [(ngModel)]="playerName"
+                  (keydown.enter)="saveName()"
+                  (click)="$event.stopPropagation()"
+                  autofocus />
+                <button class="save-btn" (click)="saveName()">SAVE</button>
+              </div>
+            } @else {
+              <p class="name-saved">✅ Saved as <strong>{{ playerName || 'Anonymous' }}</strong>!</p>
+            }
+          </div>
+        }
+
+        <div class="game-over-buttons">
+          <button class="btn-go btn-again" (click)="playAgain()">
+            ↺ PLAY AGAIN
+          </button>
+          <button class="btn-go btn-scores" (click)="goToScoreboard()">
+            🏆 SCORES
+          </button>
+          <button class="btn-go btn-menu" (click)="goToMenu()">
+            ⌂ MENU
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="esc-hint">ESC — Hub</div>
+</div>
