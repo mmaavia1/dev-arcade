@@ -1,0 +1,269 @@
+<div class="shell">
+
+  <!-- IDLE -->
+  @if (state === 'idle') {
+    <div class="screen center-screen">
+      <div class="badge qa">🧪 QA Challenge</div>
+      <h1>Bug Bash</h1>
+      <p class="sub">5 real UI screens · Find all planted bugs · Learn why each one matters</p>
+      <div class="topic-chips">
+        <span class="chip">Accessibility</span><span class="chip">UX Patterns</span>
+        <span class="chip">Form Design</span><span class="chip">Data Tables</span>
+        <span class="chip">Mobile Nav</span>
+      </div>
+      @if (bestScore > 0) { <div class="best-badge">🏆 Your best: {{ bestScore }} pts</div> }
+      <button class="btn-primary" (click)="startGame()">Start Bug Hunt →</button>
+      <button class="btn-ghost" (click)="goHome()">← Back to Hub</button>
+    </div>
+  }
+
+  <!-- PLAYING / REVEAL -->
+  @if (state === 'playing' || state === 'reveal') {
+    <div class="game-layout">
+
+      <header class="game-header">
+        <button class="btn-ghost-sm" (click)="goHome()">🏠</button>
+        <div class="screen-nav">
+          @for (s of screens; track s.id) {
+            <div class="screen-dot" [class.active]="s.id === screen.id" [class.done]="screens.indexOf(s) < screenIdx"></div>
+          }
+        </div>
+        <div class="hud-right">
+          <div class="timer-badge" [class.danger]="timeLeft <= 15">⏱ {{ timeLeft }}s</div>
+          <div class="score-badge">{{ score }} pts</div>
+        </div>
+      </header>
+
+      <div class="timer-strip" [style.width.%]="timerPct" [style.background]="timerColor"></div>
+
+      <div class="screen-title-row">
+        <h2>{{ screen.title }}</h2>
+        <span class="bug-count">{{ bugsFound }}/{{ totalBugs }} bugs found</span>
+      </div>
+
+      <!-- Main area: mock UI + bug list -->
+      <div class="main-area">
+
+        <!-- Mock UI with clickable bug zones -->
+        <div class="mock-ui-wrap">
+          <div class="mock-ui">
+
+            <!-- Screen 1: Login Page -->
+            @if (screen.id === 1) {
+              <div class="mock-screen login-screen">
+                <div class="mock-logo">🏢 Acme Corp</div>
+                <div class="mock-form">
+                  <h3 class="mock-title">Welcome back</h3>
+                  <div class="mock-field">
+                    <input class="mock-input" placeholder="Email address" readonly />
+                  </div>
+                  <div class="mock-field">
+                    <div class="mock-input" [class.bug-zone]="!screen.bugs[2].found" (click)="clickBug(screen.bugs[2])">
+                      Password
+                      @if (!screen.bugs[2].found) { <span class="bug-indicator">🐛</span> }
+                      @if (screen.bugs[2].found) { <span class="found-tick">✓</span> }
+                    </div>
+                  </div>
+                  <div class="mock-error" [class.bug-zone]="!screen.bugs[1].found" (click)="clickBug(screen.bugs[1])" style="color:#4CAF50">
+                    Invalid credentials — please try again
+                    @if (!screen.bugs[1].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[1].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <button class="mock-btn green-btn" [class.bug-zone]="!screen.bugs[0].found" (click)="clickBug(screen.bugs[0])">
+                    Login
+                    @if (!screen.bugs[0].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[0].found) { <span class="found-tick">✓</span> }
+                  </button>
+                  <a class="mock-link" [class.bug-zone]="!screen.bugs[3].found" (click)="clickBug(screen.bugs[3])">
+                    Fogort Password?
+                    @if (!screen.bugs[3].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[3].found) { <span class="found-tick">✓</span> }
+                  </a>
+                  <div class="mock-hint" [class.bug-zone]="!screen.bugs[4].found" (click)="clickBug(screen.bugs[4])">
+                    No show/hide option for password
+                    @if (!screen.bugs[4].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[4].found) { <span class="found-tick">✓</span> }
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Screen 2: Dashboard Header -->
+            @if (screen.id === 2) {
+              <div class="mock-screen">
+                <div class="mock-header-bar">
+                  <div class="mock-brand">📊 Analytics</div>
+                  <div class="mock-header-right">
+                    <div class="live-badge" [class.bug-zone]="!screen.bugs[3].found" (click)="clickBug(screen.bugs[3])">
+                      🟢 LIVE · Updated 3h ago
+                      @if (!screen.bugs[3].found) { <span class="bug-indicator">🐛</span> }
+                      @if (screen.bugs[3].found) { <span class="found-tick">✓</span> }
+                    </div>
+                    <div class="mock-icon-btn" [class.bug-zone]="!screen.bugs[1].found" (click)="clickBug(screen.bugs[1])">
+                      ⚙️
+                      @if (!screen.bugs[1].found) { <span class="bug-indicator">🐛</span> }
+                      @if (screen.bugs[1].found) { <span class="found-tick">✓</span> }
+                    </div>
+                    <div class="tiny-avatar" [class.bug-zone]="!screen.bugs[2].found" (click)="clickBug(screen.bugs[2])">
+                      MK
+                      @if (!screen.bugs[2].found) { <span class="bug-indicator">🐛</span> }
+                      @if (screen.bugs[2].found) { <span class="found-tick">✓</span> }
+                    </div>
+                  </div>
+                </div>
+                <div class="mock-subtitle" [class.bug-zone]="!screen.bugs[0].found" (click)="clickBug(screen.bugs[0])" style="color:#aaa;font-size:12px;padding:8px 20px">
+                  Last updated 3 mins ago
+                  @if (!screen.bugs[0].found) { <span class="bug-indicator">🐛</span> }
+                  @if (screen.bugs[0].found) { <span class="found-tick">✓</span> }
+                </div>
+                <div class="mock-chart-placeholder">[ Chart Area ]</div>
+              </div>
+            }
+
+            <!-- Screen 3: Data Table -->
+            @if (screen.id === 3) {
+              <div class="mock-screen">
+                <div class="mock-table-header">
+                  <span>Users</span>
+                  <div class="mock-search">🔍 Search... (0 results)</div>
+                </div>
+                <div class="mock-table">
+                  <div class="mock-th-row">
+                    <span class="mock-th" [class.bug-zone]="!screen.bugs[1].found" (click)="clickBug(screen.bugs[1])">Name @if (!screen.bugs[1].found) { <span class="bug-indicator">🐛</span> } @if (screen.bugs[1].found) { <span class="found-tick">✓</span> }</span>
+                    <span class="mock-th">Date ↕</span>
+                    <span class="mock-th">Status</span>
+                    <span class="mock-th">Action</span>
+                  </div>
+                  <div class="mock-tr" [class.bug-zone]="!screen.bugs[0].found" (click)="clickBug(screen.bugs[0])">
+                    <span>Ali Hassan</span><span>Apr 15, 2026</span><span>Active</span>
+                    <button class="mock-del-btn">🗑</button>
+                    @if (!screen.bugs[0].found) { <span class="bug-indicator">🐛</span> }
+                  </div>
+                  <div class="mock-tr">
+                    <span class="truncated" [class.bug-zone]="!screen.bugs[4].found" (click)="clickBug(screen.bugs[4])">
+                      A very long description that gets cut off with no tooltip...
+                      @if (!screen.bugs[4].found) { <span class="bug-indicator">🐛</span> }
+                    </span>
+                    <span [class.bug-zone]="!screen.bugs[2].found" (click)="clickBug(screen.bugs[2])" style="color:#f97316">15/04/26 @if (!screen.bugs[2].found) { <span class="bug-indicator">🐛</span> }</span>
+                    <span>Active</span>
+                    <button class="mock-del-btn" [class.bug-zone]="!screen.bugs[3].found" (click)="clickBug(screen.bugs[3])">
+                      🗑 @if (!screen.bugs[3].found) { <span class="bug-indicator">🐛</span> }
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Screen 4: Checkout -->
+            @if (screen.id === 4) {
+              <div class="mock-screen">
+                <h3 style="padding:16px;color:#fff">Checkout</h3>
+                <div class="mock-form" style="padding:0 20px">
+                  <div class="mock-field"><input class="mock-input" placeholder="Card number" readonly /></div>
+                  <div class="mock-field">
+                    <input class="mock-input" placeholder="CVV" readonly [class.bug-zone]="!screen.bugs[0].found" (click)="clickBug(screen.bugs[0])" />
+                    @if (!screen.bugs[0].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[0].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <div class="mock-inline-error" [class.bug-zone]="!screen.bugs[1].found" (click)="clickBug(screen.bugs[1])">
+                    ❌ Invalid email (shown while typing)
+                    @if (!screen.bugs[1].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[1].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <div class="mock-price-row" [class.bug-zone]="!screen.bugs[2].found" (click)="clickBug(screen.bugs[2])">
+                    <span>Subtotal</span><strong>$29.99</strong>
+                    @if (!screen.bugs[2].found) { <span class="bug-indicator">🐛</span> }
+                  </div>
+                  <div class="mock-price-row"><span>Total</span><strong>$31.99</strong></div>
+                  <button class="mock-btn primary-btn" [class.bug-zone]="!screen.bugs[3].found" (click)="clickBug(screen.bugs[3])">
+                    Place Order
+                    @if (!screen.bugs[3].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[3].found) { <span class="found-tick">✓</span> }
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Screen 5: Mobile Nav -->
+            @if (screen.id === 5) {
+              <div class="mock-screen" style="background:#0f172a">
+                <div class="mock-page-content">[ Page Content ]</div>
+                <div class="mock-bottom-nav">
+                  <div class="mock-nav-item active-nav" [class.bug-zone]="!screen.bugs[0].found" (click)="clickBug(screen.bugs[0])">
+                    🏠 <span>Home</span>
+                    @if (!screen.bugs[0].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[0].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <div class="mock-nav-item" [class.bug-zone]="!screen.bugs[1].found" (click)="clickBug(screen.bugs[1])">
+                    📈
+                    @if (!screen.bugs[1].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[1].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <div class="mock-nav-item" [class.bug-zone]="!screen.bugs[2].found" (click)="clickBug(screen.bugs[2])">
+                    🔔 <span class="nav-badge">1247</span>
+                    @if (!screen.bugs[2].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[2].found) { <span class="found-tick">✓</span> }
+                  </div>
+                  <div class="mock-nav-item" [class.bug-zone]="!screen.bugs[3].found" (click)="clickBug(screen.bugs[3])">
+                    👤 <span>Profile</span>
+                    @if (!screen.bugs[3].found) { <span class="bug-indicator">🐛</span> }
+                    @if (screen.bugs[3].found) { <span class="found-tick">✓</span> }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Found toast -->
+          @if (showFoundToast && lastFound) {
+            <div class="found-toast">
+              ✅ Found: <strong>{{ lastFound.label }}</strong>
+            </div>
+          }
+        </div>
+
+        <!-- Bug checklist -->
+        <div class="bug-panel">
+          <h3 class="panel-heading">Bug Checklist</h3>
+          <div class="bug-list">
+            @for (bug of screen.bugs; track bug.id) {
+              <div class="bug-item" [class.found]="bug.found">
+                <span class="bug-status">{{ bug.found ? '✅' : '⬜' }}</span>
+                <div class="bug-content">
+                  <div class="bug-label">{{ bug.label }}</div>
+                  @if (bug.found || state === 'reveal') {
+                    <div class="bug-desc">{{ bug.description }}</div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="panel-actions">
+            <button class="btn-reveal" (click)="reveal()">👁 Reveal All</button>
+            <button class="btn-next" (click)="nextScreen()">
+              {{ screenIdx < screens.length - 1 ? 'Next Screen →' : 'See Results →' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- DONE -->
+  @if (state === 'done') {
+    <div class="screen center-screen">
+      <div class="badge qa">Results</div>
+      <h1>{{ grade() }}</h1>
+      <div class="result-grid">
+        <div class="result-card"><span class="rc-val">{{ score }}</span><span class="rc-label">Score</span></div>
+        <div class="result-card"><span class="rc-val">{{ grandFound }}/{{ grandTotal }}</span><span class="rc-label">Bugs Found</span></div>
+        <div class="result-card gold"><span class="rc-val">{{ bestScore }}</span><span class="rc-label">Best Score</span></div>
+      </div>
+      <div class="done-actions">
+        <button class="btn-primary" (click)="startGame()">Try Again</button>
+        <button class="btn-ghost" (click)="goHome()">← Hub</button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,148 @@
+<div class="shell">
+
+  <!-- ── IDLE ─────────────────────────────────────────────────────────────── -->
+  @if (state === 'idle') {
+    <div class="screen center-screen">
+      <div class="badge dev">👨‍💻 Developer Challenge</div>
+      <h1>CSS Duel</h1>
+      <p class="sub">10 questions · Live visual previews · Explanation after each answer</p>
+      <div class="topic-chips">
+        <span class="chip">Flexbox</span><span class="chip">CSS Grid</span>
+        <span class="chip">Box Model</span><span class="chip">Typography</span>
+        <span class="chip">Positioning</span><span class="chip">Media Queries</span>
+      </div>
+      @if (bestScore > 0) {
+        <div class="best-badge">🏆 Your best: {{ bestScore }} pts</div>
+      }
+      <button class="btn-primary" (click)="startGame()">Start Challenge →</button>
+      <button class="btn-ghost" (click)="goHome()">← Back to Hub</button>
+    </div>
+  }
+
+  <!-- ── PLAYING / ANSWERED ─────────────────────────────────────────────── -->
+  @if (state === 'playing' || state === 'answered') {
+    <div class="game-layout">
+
+      <!-- Header -->
+      <header class="game-header">
+        <button class="btn-ghost-sm" (click)="goHome()">🏠 Hub</button>
+        <div class="progress-wrap">
+          <div class="progress-bar" [style.width.%]="progress"></div>
+          <span class="progress-label">{{ current + 1 }} / {{ totalQ }}</span>
+        </div>
+        <div class="score-display">{{ score }} pts</div>
+      </header>
+
+      <!-- Timer bar -->
+      <div class="timer-strip" [style.width.%]="timerPct" [style.background]="timerColor"></div>
+
+      <!-- Category badge + question -->
+      <div class="question-area">
+        <div class="category-badge">{{ q.category }}</div>
+        <h2 class="question-text">{{ q.prompt }}</h2>
+      </div>
+
+      <!-- Two-column layout: code on left, preview on right -->
+      <div class="dual-panel">
+
+        <!-- Code block -->
+        <div class="code-panel">
+          <div class="code-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">styles.css</span>
+          </div>
+          <pre class="code-block"><code>@for (line of codeDisplay(q.codeLines); track $index) {<span class="code-line" [class.blank-line]="$index === q.blankIndex && state === 'playing'" [class.answer-line]="$index === q.blankIndex && state === 'answered'" [class.correct-answer]="$index === q.blankIndex && state === 'answered'">{{ line }}</span>
+}</code></pre>
+        </div>
+
+        <!-- Live visual preview -->
+        <div class="preview-panel">
+          <div class="preview-label">▶ Live Preview</div>
+          <div class="preview-stage">
+            <div class="preview-container" [ngStyle]="q.containerStyle">
+              @for (box of q.boxes; track $index) {
+                <div class="preview-box" [ngStyle]="box.style">{{ box.label }}</div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="options-area">
+        <p class="options-label">
+          @if (state === 'playing') { Select the correct property to complete the blank: }
+          @if (state === 'answered' && selected === q.correct) { ✅ Correct! +{{ results[results.length-1].points }} pts }
+          @if (state === 'answered' && selected !== q.correct) { ❌ Wrong — the correct answer was: <strong>{{ q.correct }}</strong> }
+        </p>
+
+        <div class="options-grid">
+          @for (opt of q.options; track opt) {
+            <button
+              class="option-btn"
+              [class.selected]="selected === opt && state === 'playing'"
+              [class.correct]="state === 'answered' && isCorrect(opt)"
+              [class.wrong]="state === 'answered' && isWrong(opt)"
+              [disabled]="state === 'answered'"
+              (click)="answer(opt)">
+              <span class="opt-prop">{{ opt }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Explanation -->
+        @if (state === 'answered') {
+          <div class="explanation-card">
+            <span class="explain-icon">💡</span>
+            <p>{{ q.explanation }}</p>
+          </div>
+          <button class="btn-primary" (click)="next()">
+            {{ current + 1 < totalQ ? 'Next Question →' : 'See Results →' }}
+          </button>
+        }
+      </div>
+
+      <!-- Streak indicator -->
+      @if (streak >= 3 && state === 'playing') {
+        <div class="streak-badge">🔥 {{ streak }} streak! +50 bonus</div>
+      }
+    </div>
+  }
+
+  <!-- ── DONE ───────────────────────────────────────────────────────────── -->
+  @if (state === 'done') {
+    <div class="screen center-screen">
+      <div class="badge dev">Results</div>
+      <h1>{{ grade() }}</h1>
+      <div class="result-grid">
+        <div class="result-card">
+          <span class="rc-val">{{ score }}</span>
+          <span class="rc-label">Total Score</span>
+        </div>
+        <div class="result-card">
+          <span class="rc-val">{{ correctCount() }}/{{ totalQ }}</span>
+          <span class="rc-label">Correct</span>
+        </div>
+        <div class="result-card gold">
+          <span class="rc-val">{{ bestScore }}</span>
+          <span class="rc-label">Best Score</span>
+        </div>
+      </div>
+
+      <!-- Per-question results -->
+      <div class="q-results">
+        @for (r of results; track $index) {
+          <div class="q-dot" [class.qc]="r.correct" [title]="'Q' + ($index + 1) + ': ' + (r.correct ? '+' + r.points : 'wrong')">
+            {{ r.correct ? '✓' : '✗' }}
+          </div>
+        }
+      </div>
+
+      <div class="done-actions">
+        <button class="btn-primary" (click)="startGame()">Try Again</button>
+        <button class="btn-ghost" (click)="goHome()">← Hub</button>
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,241 @@
+<div class="shell">
+
+  <!-- IDLE -->
+  @if (state === 'idle') {
+    <div class="screen center-screen">
+      <div class="badge design">🎨 Designer Challenge</div>
+      <h1>Can't Unsee</h1>
+      <p class="sub">12 rounds · Two designs side-by-side · Pick the correct one · Train your design eye</p>
+      <div class="topic-chips">
+        <span class="chip">Spacing</span><span class="chip">Typography</span><span class="chip">Color & Contrast</span>
+        <span class="chip">Alignment</span><span class="chip">Accessibility</span><span class="chip">UX Patterns</span>
+      </div>
+      @if (bestScore > 0) { <div class="best-badge">🏆 Your best: {{ bestScore }} pts</div> }
+      <button class="btn-primary" (click)="startGame()">Train Your Eye →</button>
+      <button class="btn-ghost" (click)="goHome()">← Back to Hub</button>
+    </div>
+  }
+
+  <!-- PLAYING / ANSWERED -->
+  @if (state === 'playing' || state === 'answered') {
+    <div class="game-layout">
+
+      <header class="game-header">
+        <button class="btn-ghost-sm" (click)="goHome()">🏠</button>
+        <div class="progress-wrap">
+          <div class="progress-bar" [style.width.%]="progress"></div>
+          <span class="progress-label">{{ current + 1 }} / {{ totalQ }}</span>
+        </div>
+        <div class="score-badge">{{ score }} pts</div>
+      </header>
+
+      <div class="timer-strip" [style.width.%]="timerPct" [style.background]="timerColor"></div>
+
+      <div class="question-area">
+        <div class="category-badge">{{ q.category }}</div>
+        <h2>{{ q.question }}</h2>
+        @if (state === 'playing') {
+          <p class="instruction">Click the correct design ↓</p>
+        }
+      </div>
+
+      <!-- Side by side -->
+      <div class="panels-wrap">
+
+        <!-- LEFT -->
+        <div class="design-panel"
+          [class.selectable]="state === 'playing'"
+          [class.correct-panel]="state === 'answered' && q.correctSide === 'left'"
+          [class.wrong-panel]="state === 'answered' && selected === 'left' && q.correctSide !== 'left'"
+          (click)="pick('left')">
+          <div class="panel-label">A</div>
+          <div class="panel-content">
+            <!-- Inline design previews -->
+            <ng-container [ngSwitch]="q.id">
+              <!-- Q1: Button padding -->
+              <div *ngSwitchCase="1" class="preview-demo">
+                <button class="demo-btn cramped">Save Changes</button>
+              </div>
+              <!-- Q2: Type hierarchy -->
+              <div *ngSwitchCase="2" class="preview-demo">
+                <div class="h1-demo wrong-hier">Dashboard Overview</div>
+                <div class="h2-demo wrong-hier">Recent Activity</div>
+                <div class="body-demo wrong-hier">Click any item to see details</div>
+              </div>
+              <!-- Q3: Contrast -->
+              <div *ngSwitchCase="3" class="preview-demo contrast-demo-left">
+                <p>This text has low contrast — hard to read for many users.</p>
+              </div>
+              <!-- Q4: Text alignment -->
+              <div *ngSwitchCase="4" class="preview-demo">
+                <p class="demo-text left-align">Left-aligned body text is easier to read because the eye always returns to the same starting position on each new line.</p>
+              </div>
+              <!-- Q5: Consistency -->
+              <div *ngSwitchCase="5" class="preview-demo btn-row">
+                <button class="demo-btn consistent">Primary</button>
+                <button class="demo-btn consistent outline-consistent">Secondary</button>
+                <button class="demo-btn consistent">Tertiary</button>
+              </div>
+              <!-- Q6: Icons -->
+              <div *ngSwitchCase="6" class="preview-demo icon-row">
+                <div class="icon-item"><span>🏠</span><span class="icon-label">Home</span></div>
+                <div class="icon-item"><span>🔍</span><span class="icon-label">Search</span></div>
+                <div class="icon-item"><span>👤</span><span class="icon-label">Profile</span></div>
+              </div>
+              <!-- Q7: List spacing -->
+              <div *ngSwitchCase="7" class="preview-demo">
+                <div class="list-item" style="margin-bottom:16px">Item One</div>
+                <div class="list-item" style="margin-bottom:16px">Item Two</div>
+                <div class="list-item" style="margin-bottom:16px">Item Three</div>
+              </div>
+              <!-- Q8: Form labels -->
+              <div *ngSwitchCase="8" class="preview-demo">
+                <div class="form-field-demo"><label>Email address</label><input class="demo-input" placeholder="you@example.com" readonly/></div>
+                <div class="form-field-demo"><label>Password</label><input class="demo-input" type="password" value="••••••" readonly/></div>
+              </div>
+              <!-- Q9: Line height -->
+              <div *ngSwitchCase="9" class="preview-demo">
+                <p class="demo-text" style="line-height:1.1;font-size:13px">Tight line height makes paragraphs very hard to read. The lines feel cramped and the eye struggles to track from one line to the next without losing its place.</p>
+              </div>
+              <!-- Q10: Error state -->
+              <div *ngSwitchCase="10" class="preview-demo">
+                <div class="error-demo correct-error">
+                  <span>⚠️</span>
+                  <div class="error-input-wrap">
+                    <input class="demo-input error-input" value="invalid@" readonly/>
+                    <span class="error-msg">Invalid email address</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Q11: CTA button -->
+              <div *ngSwitchCase="11" class="preview-demo cta-demo">
+                <button class="demo-btn outline-only">Get Started</button>
+              </div>
+              <!-- Q12: Loading -->
+              <div *ngSwitchCase="12" class="preview-demo">
+                <div class="skeleton-demo">
+                  <div class="skel-line wide"></div>
+                  <div class="skel-line medium"></div>
+                  <div class="skel-line short"></div>
+                </div>
+              </div>
+              <!-- Q13: Card padding -->
+              <div *ngSwitchCase="13" class="preview-demo">
+                <div class="card-demo" style="padding:24px 8px">Card with inconsistent padding</div>
+              </div>
+              <!-- Q14: Success msg -->
+              <div *ngSwitchCase="14" class="preview-demo">
+                <div class="success-demo good-success">
+                  <span>✅</span>
+                  <span>Profile updated successfully</span>
+                  <span class="dismiss">✕</span>
+                </div>
+              </div>
+              <!-- Q15: Font weight -->
+              <div *ngSwitchCase="15" class="preview-demo">
+                <div style="font-weight:500;font-size:20px;color:#fff">Page Title</div>
+                <div style="font-weight:500;font-size:14px;color:#aaa">Body text in same weight as title</div>
+              </div>
+            </ng-container>
+          </div>
+          @if (state === 'answered') {
+            <div class="verdict" [class.v-correct]="q.correctSide === 'left'" [class.v-wrong]="q.correctSide !== 'left'">
+              {{ q.correctSide === 'left' ? '✓ Correct' : '✗ Incorrect' }}
+            </div>
+          }
+        </div>
+
+        <!-- VS divider -->
+        <div class="vs-divider">VS</div>
+
+        <!-- RIGHT -->
+        <div class="design-panel"
+          [class.selectable]="state === 'playing'"
+          [class.correct-panel]="state === 'answered' && q.correctSide === 'right'"
+          [class.wrong-panel]="state === 'answered' && selected === 'right' && q.correctSide !== 'right'"
+          (click)="pick('right')">
+          <div class="panel-label">B</div>
+          <div class="panel-content">
+            <ng-container [ngSwitch]="q.id">
+              <div *ngSwitchCase="1" class="preview-demo"><button class="demo-btn padded">Save Changes</button></div>
+              <div *ngSwitchCase="2" class="preview-demo">
+                <div class="h1-demo">Dashboard Overview</div>
+                <div class="h2-demo">Recent Activity</div>
+                <div class="body-demo">Click any item to see details</div>
+              </div>
+              <div *ngSwitchCase="3" class="preview-demo contrast-demo-right"><p>This text has good contrast — readable by everyone including low-vision users.</p></div>
+              <div *ngSwitchCase="4" class="preview-demo"><p class="demo-text center-align">Center-aligned body text creates uneven left margins that make long paragraphs tiring to read.</p></div>
+              <div *ngSwitchCase="5" class="preview-demo btn-row">
+                <button class="demo-btn inconsistent1">Primary</button>
+                <button class="demo-btn inconsistent2">Secondary</button>
+                <button class="demo-btn inconsistent3">Tertiary</button>
+              </div>
+              <div *ngSwitchCase="6" class="preview-demo icon-row">
+                <div class="icon-item"><span>🏠</span></div>
+                <div class="icon-item"><span>🔍</span></div>
+                <div class="icon-item"><span>👤</span></div>
+              </div>
+              <div *ngSwitchCase="7" class="preview-demo">
+                <div class="list-item" style="margin-bottom:12px">Item One</div>
+                <div class="list-item" style="margin-bottom:24px">Item Two</div>
+                <div class="list-item" style="margin-bottom:8px">Item Three</div>
+              </div>
+              <div *ngSwitchCase="8" class="preview-demo">
+                <div class="form-field-demo"><input class="demo-input" placeholder="Email address" readonly/></div>
+                <div class="form-field-demo"><input class="demo-input" placeholder="Password" readonly/></div>
+              </div>
+              <div *ngSwitchCase="9" class="preview-demo"><p class="demo-text" style="line-height:1.6;font-size:13px">Comfortable line height makes this text much easier to read. The eye can flow naturally from line to line without losing its position in the paragraph.</p></div>
+              <div *ngSwitchCase="10" class="preview-demo"><div class="error-demo"><input class="demo-input error-border" value="invalid@" readonly/></div></div>
+              <div *ngSwitchCase="11" class="preview-demo cta-demo"><button class="demo-btn filled-cta">Get Started</button></div>
+              <div *ngSwitchCase="12" class="preview-demo"><div class="spinner-demo"><div class="spinner"></div><span>Loading...</span></div></div>
+              <div *ngSwitchCase="13" class="preview-demo"><div class="card-demo" style="padding:20px">Card with consistent 20px padding</div></div>
+              <div *ngSwitchCase="14" class="preview-demo"><div class="success-demo text-only">Profile updated successfully</div></div>
+              <div *ngSwitchCase="15" class="preview-demo">
+                <div style="font-weight:700;font-size:20px;color:#fff">Page Title</div>
+                <div style="font-weight:400;font-size:14px;color:#aaa">Body text clearly lighter than the heading</div>
+              </div>
+            </ng-container>
+          </div>
+          @if (state === 'answered') {
+            <div class="verdict" [class.v-correct]="q.correctSide === 'right'" [class.v-wrong]="q.correctSide !== 'right'">
+              {{ q.correctSide === 'right' ? '✓ Correct' : '✗ Incorrect' }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Explanation -->
+      @if (state === 'answered') {
+        <div class="explanation-row">
+          <div class="principle-badge">📐 {{ q.principle }}</div>
+          <p class="explanation-text">{{ q.explanation }}</p>
+          <button class="btn-primary" (click)="next()">
+            {{ current + 1 < totalQ ? 'Next →' : 'See Results →' }}
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- DONE -->
+  @if (state === 'done') {
+    <div class="screen center-screen">
+      <div class="badge design">Results</div>
+      <h1>{{ grade() }}</h1>
+      <div class="result-grid">
+        <div class="result-card"><span class="rc-val">{{ score }}</span><span class="rc-label">Score</span></div>
+        <div class="result-card"><span class="rc-val">{{ correctCount() }}/{{ totalQ }}</span><span class="rc-label">Correct</span></div>
+        <div class="result-card gold"><span class="rc-val">{{ bestScore }}</span><span class="rc-label">Best</span></div>
+      </div>
+      <div class="q-results">
+        @for (r of results; track $index) {
+          <div class="q-dot" [class.qc]="r.correct">{{ r.correct ? '✓' : '✗' }}</div>
+        }
+      </div>
+      <div class="done-actions">
+        <button class="btn-primary" (click)="startGame()">Try Again</button>
+        <button class="btn-ghost" (click)="goHome()">← Hub</button>
+      </div>
+    </div>
+  }
+</div>

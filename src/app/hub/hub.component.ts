@@ -27,25 +27,29 @@ export class HubComponent implements OnInit {
         { id:'bug-tower-defense', route:'/bug-tower-defense', title:'Bug Tower Defense', emoji:'🏰', desc:'Build towers to stop bugs reaching production! 10 waves of chaos.', tag:'Dev', tagColor:'#4CAF50', bg:'linear-gradient(135deg,#0f2a0f,#1a3a0a)', difficulty:'Hard' },
         { id:'bug-squash',  route:'/bug-squash',  title:'Bug Squash',   emoji:'🐛', desc:'Squash bugs before they escape to production!',  tag:'Dev',  tagColor:'#4CAF50', bg:'linear-gradient(135deg,#1a3a1a,#0d1f0d)', difficulty:'Medium' },
         { id:'deploy-dash', route:'/deploy-dash', title:'Deploy Dash',  emoji:'🚀', desc:'Jump over merge conflicts to reach deploy!',       tag:'Dev',  tagColor:'#4CAF50', bg:'linear-gradient(135deg,#1a1a3a,#0d0d25)', difficulty:'Hard'   },
+        { id:'css-duel',    route:'/css-duel',    title:'CSS Duel',     emoji:'🎯', desc:'Fill in the CSS blank — 15 real property challenges with live previews.', tag:'Dev', tagColor:'#4CAF50', bg:'linear-gradient(135deg,#0f1a2e,#0a1020)', difficulty:'Medium' },
       ]
     },
     {
       id: 'qa', label: 'QA Testers', emoji: '🧪', color: '#2196F3',
       games: [
         { id:'test-runner', route:'/test-runner', title:'Test Runner', emoji:'✅', desc:'Catch passing tests, dodge the failing ones!', tag:'QA', tagColor:'#2196F3', bg:'linear-gradient(135deg,#0d1f3a,#0a1525)', difficulty:'Medium' },
+        { id:'bug-bash',    route:'/bug-bash',    title:'Bug Bash',    emoji:'🔍', desc:'Spot all the UX/accessibility bugs across 5 real UI screens before time runs out.', tag:'QA', tagColor:'#2196F3', bg:'linear-gradient(135deg,#0a1a2e,#071020)', difficulty:'Hard' },
       ]
     },
     {
       id: 'design', label: 'Designers', emoji: '🎨', color: '#E91E63',
       games: [
         { id:'color-match', route:'/color-match', title:'Color Match', emoji:'🎨', desc:'Match hex codes to swatches — every designer\'s workout!', tag:'Design', tagColor:'#E91E63', bg:'linear-gradient(135deg,#3a0d2a,#250518)', difficulty:'Easy' },
+        { id:'cant-unsee',  route:'/cant-unsee',  title:'Can\'t Unsee', emoji:'👁', desc:'Two designs, one correct — train your eye to spot spacing, contrast & hierarchy issues.', tag:'Design', tagColor:'#E91E63', bg:'linear-gradient(135deg,#2a0d1a,#180510)', difficulty:'Medium' },
       ]
     },
     {
       id: 'manager', label: 'Managers', emoji: '📊', color: '#FF9800',
       games: [
         { id:'sprint-planner', route:'/sprint-planner', title:'Sprint Planner', emoji:'📋', desc:'Assign tasks to the right team before deadline!',   tag:'Manager', tagColor:'#FF9800', bg:'linear-gradient(135deg,#3a2a0d,#251a05)', difficulty:'Medium' },
-        { id:'meeting-dodge',  route:'/meeting-dodge',  title:'Meeting Dodge',  emoji:'📅', desc:'Dodge pointless meetings to stay productive!',       tag:'Manager', tagColor:'#FF9800', bg:'linear-gradient(135deg,#3a1a0d,#251005)', difficulty:'Hard'   },
+        { id:'meeting-dodge',    route:'/meeting-dodge',    title:'Meeting Dodge',    emoji:'📅', desc:'Dodge pointless meetings to stay productive!',       tag:'Manager', tagColor:'#FF9800', bg:'linear-gradient(135deg,#3a1a0d,#251005)', difficulty:'Hard'   },
+        { id:'sprint-optimizer', route:'/sprint-optimizer', title:'Sprint Optimizer', emoji:'📊', desc:'Build 3 real sprints — prioritize stories, manage capacity, respect dependencies.', tag:'PM', tagColor:'#FF9800', bg:'linear-gradient(135deg,#2a1a0a,#180e05)', difficulty:'Hard' },
       ]
     },
   ];

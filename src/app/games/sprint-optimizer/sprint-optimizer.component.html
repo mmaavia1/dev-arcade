@@ -1,0 +1,169 @@
+<div class="shell">
+
+  <!-- IDLE -->
+  @if (state === 'idle') {
+    <div class="screen center-screen">
+      <div class="badge pm">📊 PM Challenge</div>
+      <h1>Sprint Optimizer</h1>
+      <p class="sub">3 sprints · Real backlog · Maximize business value · Watch out for dependencies</p>
+      <div class="topic-chips">
+        <span class="chip">Prioritization</span><span class="chip">Story Points</span>
+        <span class="chip">Dependencies</span><span class="chip">Capacity Planning</span><span class="chip">Value vs Effort</span>
+      </div>
+      @if (bestScore > 0) { <div class="best-badge">🏆 Your best: {{ bestScore }} pts</div> }
+      <button class="btn-primary" (click)="startGame()">Plan Sprint 1 →</button>
+      <button class="btn-ghost" (click)="goHome()">← Back to Hub</button>
+    </div>
+  }
+
+  <!-- PLANNING / LOCKED -->
+  @if (state === 'planning' || state === 'locked') {
+    <div class="game-layout">
+
+      <header class="game-header">
+        <button class="btn-ghost-sm" (click)="goHome()">🏠</button>
+        <div class="sprint-indicator">
+          <span class="sprint-label">Sprint {{ sprintNum }} of 3</span>
+          <div class="sprint-dots">
+            @for (n of [1,2,3]; track n) {
+              <div class="sprint-dot" [class.active]="n === sprintNum" [class.done]="n < sprintNum"></div>
+            }
+          </div>
+        </div>
+        <div class="score-badge">{{ score }} pts</div>
+      </header>
+
+      <!-- Capacity bar -->
+      <div class="capacity-section">
+        <div class="capacity-labels">
+          <span>Sprint Capacity</span>
+          <span [style.color]="pointsColor()">{{ usedPoints }} / {{ capacity }} pts
+            @if (overCapacity) { <strong class="over-label"> OVER!</strong> }
+          </span>
+        </div>
+        <div class="capacity-bar-bg">
+          <div class="capacity-bar-fill" [style.width.%]="capacityPct" [style.background]="pointsColor()"></div>
+        </div>
+        <div class="capacity-value-label">
+          Sprint value: <strong>${{ sprintValue | number }}</strong>
+        </div>
+      </div>
+
+      <!-- Feedback toast -->
+      @if (feedback) {
+        <div class="feedback-toast" [class.good]="feedback.good" [class.bad]="!feedback.good">
+          {{ feedback.msg }}
+        </div>
+      }
+
+      <!-- Two columns: Backlog + Sprint -->
+      <div class="board">
+
+        <!-- Backlog -->
+        <div class="column">
+          <div class="col-header backlog-header">
+            <span>📋 Backlog</span>
+            <span class="col-count">{{ backlog.length }} stories</span>
+          </div>
+          <div class="story-list">
+            @for (story of backlog; track story.id) {
+              <div class="story-card" [class.disabled]="state === 'locked'" (click)="toggle(story)">
+                <div class="story-top">
+                  <span class="story-title">{{ story.title }}</span>
+                  <span class="story-pts" [style.background]="pointsColor()">{{ story.points }}pt</span>
+                </div>
+                <div class="story-meta">
+                  <span class="role-tag" [style.background]="roleColors[story.role] + '22'" [style.color]="roleColors[story.role]" [style.border-color]="roleColors[story.role] + '44'">{{ story.role }}</span>
+                  <span class="priority-tag" [style.color]="priorityColors[story.priority]">● {{ story.priority }}</span>
+                  <span class="story-value">💰 ${{ story.value | number }}</span>
+                </div>
+                @if (story.dependsOn) {
+                  <div class="dep-note">⛓ Requires: {{ getStoryTitle(story.dependsOn) }}</div>
+                }
+                @if (state !== 'locked') { <div class="add-hint">+ Add to Sprint</div> }
+              </div>
+            }
+            @if (backlog.length === 0) { <div class="empty-col">All stories in sprint!</div> }
+          </div>
+        </div>
+
+        <!-- Sprint -->
+        <div class="column">
+          <div class="col-header sprint-header">
+            <span>🚀 Sprint {{ sprintNum }}</span>
+            <span class="col-count">{{ sprint.length }} stories</span>
+          </div>
+          <div class="story-list">
+            @for (story of sprint; track story.id) {
+              <div class="story-card in-sprint" [class.dep-warn]="hasDep(story)" [class.disabled]="state === 'locked'" (click)="toggle(story)">
+                <div class="story-top">
+                  <span class="story-title">{{ story.title }}</span>
+                  <span class="story-pts green-pts">{{ story.points }}pt</span>
+                </div>
+                <div class="story-meta">
+                  <span class="role-tag" [style.background]="roleColors[story.role] + '22'" [style.color]="roleColors[story.role]" [style.border-color]="roleColors[story.role] + '44'">{{ story.role }}</span>
+                  <span class="priority-tag" [style.color]="priorityColors[story.priority]">● {{ story.priority }}</span>
+                  <span class="story-value">💰 ${{ story.value | number }}</span>
+                </div>
+                @if (hasDep(story)) { <div class="dep-warn-text">⚠️ Dependency missing from sprint!</div> }
+                @if (state !== 'locked') { <div class="remove-hint">− Remove</div> }
+              </div>
+            }
+            @if (sprint.length === 0) { <div class="empty-col">Click stories to add →</div> }
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="board-footer">
+        @if (state === 'planning') {
+          <div class="footer-hint">💡 Tip: prioritize high-value stories, respect dependencies, stay within capacity.</div>
+          <button class="btn-primary" (click)="lockSprint()" [disabled]="sprint.length === 0">Lock Sprint →</button>
+        }
+        @if (state === 'locked') {
+          <div class="sprint-result">
+            @if (lockedSprints[lockedSprints.length - 1].issues.length === 0) {
+              <div class="result-good">✅ Perfect sprint! No issues found.</div>
+            } @else {
+              <div class="result-issues">
+                @for (issue of lockedSprints[lockedSprints.length - 1].issues; track issue) {
+                  <div class="issue-item">⚠️ {{ issue }}</div>
+                }
+              </div>
+            }
+            <button class="btn-primary" (click)="nextSprint()">
+              {{ sprintNum < 3 && stories.length > 0 ? 'Plan Sprint ' + (sprintNum + 1) + ' →' : 'See Results →' }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- DONE -->
+  @if (state === 'done') {
+    <div class="screen center-screen">
+      <div class="badge pm">Results</div>
+      <h1>{{ grade() }}</h1>
+      <div class="result-grid">
+        <div class="result-card"><span class="rc-val">{{ score }}</span><span class="rc-label">Total Points</span></div>
+        <div class="result-card"><span class="rc-val">{{ lockedSprints.length }}</span><span class="rc-label">Sprints Run</span></div>
+        <div class="result-card gold"><span class="rc-val">{{ bestScore }}</span><span class="rc-label">Best Score</span></div>
+      </div>
+      <div class="sprint-summary">
+        @for (sp of lockedSprints; track sp.sprintNum) {
+          <div class="sprint-row">
+            <span>Sprint {{ sp.sprintNum }}</span>
+            <span>${{ sp.value | number }} value</span>
+            <span class="sprint-pts">+{{ sp.pts }} pts</span>
+            @if (sp.issues.length > 0) { <span class="issue-count">{{ sp.issues.length }} issue(s)</span> }
+          </div>
+        }
+      </div>
+      <div class="done-actions">
+        <button class="btn-primary" (click)="startGame()">Try Again</button>
+        <button class="btn-ghost" (click)="goHome()">← Hub</button>
+      </div>
+    </div>
+  }
+</div>
